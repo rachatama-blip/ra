@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Shop - ร้านค้าออนไลน์</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        /* ===== NAVBAR ===== */
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand {
+            font-size: 24px;
+            font-weight: bold;
+            color: white !important;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .navbar-brand i {
+            font-size: 28px;
+        }
+
+        .nav-link {
+            color: white !important;
+            margin-left: 20px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: #ffd700 !important;
+            transform: translateY(-2px);
+        }
+
+        .cart-icon {
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .cart-icon:hover {
+            color: #ffd700;
+            transform: scale(1.1);
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ff6b6b;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* ===== BANNER ===== */
+        .banner {
+            background: linear-gradient(rgba(102, 126, 234, 0.7), rgba(118, 75, 162, 0.7)), 
+                        url('https://images.unsplash.com/photo-1555212436-4ddeaf1d8db2?w=1200&h=400&fit=crop') center/cover;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            margin-bottom: 50px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .banner-content h1 {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            animation: slideInDown 0.8s ease-out;
+        }
+
+        .banner-content p {
+            font-size: 20px;
+            margin-bottom: 30px;
+            animation: slideInUp 0.8s ease-out;
+        }
+
+        .btn-shop-now {
+            background-color: #ff6b6b;
+            border: none;
+            padding: 12px 40px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            animation: slideInUp 0.8s ease-out 0.2s both;
+        }
+
+        .btn-shop-now:hover {
+            background-color: #ff5252;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(255, 107, 107, 0.3);
+        }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ===== PRODUCT SECTION ===== */
+        .products-section {
+            padding: 60px 0;
+            background-color: #f8f9fa;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+            position: relative;
+        }
+
+        .section-title h2 {
+            font-size: 36px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 15px auto 0;
+            border-radius: 2px;
+        }
+
+        .product-card {
+            background: white;
+            border: none;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .product-image {
+            height: 250px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 60px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .product-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #ff6b6b;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .product-body {
+            padding: 20px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .product-description {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 15px;
+            flex-grow: 1;
+        }
+
+        .product-price {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .product-rating {
+            color: #ffc107;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .btn-add-cart {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn-add-cart:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+            color: white;
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            background: #2d3436;
+            color: white;
+            padding: 40px 0 20px;
+            margin-top: 60px;
+        }
+
+        .footer-section h5 {
+            font-weight: bold;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 10px;
+        }
+
+        .footer-section ul li a {
+            color: #bbb;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-section ul li a:hover {
+            color: white;
+        }
+
+        .footer-contact {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            color: #bbb;
+        }
+
+        .footer-contact i {
+            color: #667eea;
+            font-size: 18px;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .social-icons a {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: #667eea;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .social-icons a:hover {
+            background: #764ba2;
+            transform: translateY(-3px);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid #444;
+            margin-top: 30px;
+            padding-top: 20px;
+            text-align: center;
+            color: #999;
+        }
+
+        .footer-bottom p {
+            margin: 5px 0;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .banner-content h1 {
+                font-size: 32px;
+            }
+
+            .banner-content p {
+                font-size: 16px;
+            }
+
+            .section-title h2 {
+                font-size: 28px;
+            }
+
+            .product-card {
+                margin-bottom: 20px;
+            }
+
+            .navbar-brand {
+                font-size: 20px;
+            }
+
+            .nav-link {
+                margin-left: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ===== NAVBAR ===== -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">
+                <i class="bi bi-shop"></i>
+                My Shop
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#home">หน้าแรก</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#products">สินค้า</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contact">ติดต่อเรา</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin" style="color: #ffd700 !important;">
+                            <i class="bi bi-gear"></i> Admin
+                        </a>
+                    </li>
+                    <li class="nav-item ms-3">
+                        <a href="/cart" class="nav-link" style="margin-left: 0;">
+                            <div class="cart-icon" style="cursor: pointer;">
+                                <i class="bi bi-cart-fill"></i>
+                                <span class="cart-badge" id="cartBadge">0</span>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ===== BANNER ===== -->
+    <section class="banner" id="home">
+        <div class="banner-content">
+            <h1>ยินดีต้อนรับสู่ My Shop</h1>
+            <p>ค้นหาสินค้าคุณภาพดีกับราคาดีที่สุด</p>
+            <button class="btn btn-shop-now">
+                <i class="bi bi-lightning-charge"></i> Shop Now
+            </button>
+        </div>
+    </section>
+
+    <!-- ===== PRODUCTS SECTION ===== -->
+    <section class="products-section" id="products">
+        <div class="container">
+            <div class="section-title">
+                <h2>สินค้าแนะนำ</h2>
+            </div>
+
+            <div class="row g-4">
+                {% if products %}
+                    {% for product in products %}
+                    <div class="col-lg-3 col-md-6 col-sm-12">
+                        <div class="product-card">
+                            <div class="product-image">
+                                {% if product.image_url %}
+                                    <img src="{{ product.image_url }}" alt="{{ product.name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                {% else %}
+                                    <i class="bi bi-image"></i>
+                                {% endif %}
+                                <span class="product-badge">NEW</span>
+                            </div>
+                            <div class="product-body">
+                                <h5 class="product-title">{{ product.name }}</h5>
+                                <p class="product-description">สินค้าคุณภาพดี ครบ warranty ส่งไว</p>
+                                <div class="product-rating">
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-half"></i>
+                                </div>
+                                <div class="product-price">฿{{ "%.2f"|format(product.price) }}</div>
+                                <button class="btn btn-add-cart w-100" data-product-id="{{ product.id }}" data-product-name="{{ product.name }}" data-product-price="{{ product.price }}" onclick="addToCart(event)">
+                                    <i class="bi bi-cart-plus"></i> เพิ่มลงตะกร้า
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="col-12 text-center" style="padding: 60px 0;">
+                        <i class="bi bi-inbox" style="font-size: 48px; color: #ccc;"></i>
+                        <p style="color: #999; margin-top: 15px;">ยังไม่มีสินค้า</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== FOOTER ===== -->
+    <footer id="contact">
+        <div class="container">
+            <div class="row">
+                <!-- About -->
+                <div class="col-lg-3 col-md-6 footer-section">
+                    <h5><i class="bi bi-shop"></i> My Shop</h5>
+                    <p>ร้านค้าออนไลน์เชื่อถือได้ที่ขายสินค้าอิเล็กทรอนิกส์คุณภาพดี ราคาดี บริการดี</p>
+                    <div class="social-icons">
+                        <a href="#" title="Facebook"><i class="bi bi-facebook"></i></a>
+                        <a href="#" title="Instagram"><i class="bi bi-instagram"></i></a>
+                        <a href="#" title="Twitter"><i class="bi bi-twitter"></i></a>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div class="col-lg-3 col-md-6 footer-section">
+                    <h5>ลิงก์อื่น ๆ</h5>
+                    <ul>
+                        <li><a href="#">หน้าแรก</a></li>
+                        <li><a href="#">สินค้าทั้งหมด</a></li>
+                        <li><a href="#">โปรโมชั่น</a></li>
+                        <li><a href="#">เกี่ยวกับเรา</a></li>
+                        <li><a href="#">นโยบายความเป็นส่วนตัว</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact Info -->
+                <div class="col-lg-3 col-md-6 footer-section">
+                    <h5>ติดต่อเรา</h5>
+                    <div class="footer-contact">
+                        <i class="bi bi-telephone"></i>
+                        <span>02-123-4567</span>
+                    </div>
+                    <div class="footer-contact">
+                        <i class="bi bi-envelope"></i>
+                        <span>info@myshop.com</span>
+                    </div>
+                    <div class="footer-contact">
+                        <i class="bi bi-geo-alt"></i>
+                        <span>กรุงเทพมหานคร ประเทศไทย</span>
+                    </div>
+                </div>
+
+                <!-- Support -->
+                <div class="col-lg-3 col-md-6 footer-section">
+                    <h5>บริการลูกค้า</h5>
+                    <ul>
+                        <li><a href="#">คืนเงิน 7 วัน</a></li>
+                        <li><a href="#">การชำระเงิน</a></li>
+                        <li><a href="#">การจัดส่ง</a></li>
+                        <li><a href="#">ติดต่อ Support</a></li>
+                        <li><a href="#">คำถามที่พบบ่อย</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2026 My Shop. All Rights Reserved.</p>
+                <p>ออกแบบและพัฒนาด้วย <span style="color: #ff6b6b;">❤</span> ด้วย Python Flask</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script>
+        // Update cart badge
+        function updateCartBadge() {
+            fetch('/api/cart')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('cartBadge').innerText = data.total_items;
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        // Add to cart functionality
+        function addToCart(event) {
+            event.preventDefault();
+            const btn = event.target.closest('.btn-add-cart');
+            const productId = btn.getAttribute('data-product-id');
+            const productName = btn.getAttribute('data-product-name');
+            const productPrice = btn.getAttribute('data-product-price');
+
+            fetch('/api/cart/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    product_id: productId,
+                    quantity: 1
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    // Show success message
+                    showNotification(`เพิ่ม ${productName} ลงตะกร้าแล้ว!`);
+                    updateCartBadge();
+                } else {
+                    showNotification('เกิดข้อผิดพลาด', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('เกิดข้อผิดพลาด', 'error');
+            });
+        }
+
+        // Show notification
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 80px;
+                right: 20px;
+                background: ${type === 'error' ? '#dc3545' : '#28a745'};
+                color: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 9999;
+                animation: slideIn 0.3s ease-out;
+            `;
+            notification.innerText = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // CSS for notification animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    transform: translateX(400px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            @keyframes slideOut {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(400px);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Smooth scroll for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+
+        // Update cart badge on page load
+        updateCartBadge();
+    </script>
+</body>
+</html>

@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ตะกร้าสินค้า - My Shop</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* ===== NAVBAR ===== */
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand {
+            font-size: 24px;
+            font-weight: bold;
+            color: white !important;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-link {
+            color: white !important;
+            margin-left: 20px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: #ffd700 !important;
+            transform: translateY(-2px);
+        }
+
+        /* ===== CART CONTAINER ===== */
+        .cart-container {
+            max-width: 1000px;
+            margin: 40px auto;
+        }
+
+        .page-title {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .page-title h1 {
+            color: #667eea;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .page-title p {
+            color: #999;
+        }
+
+        .cart-items-section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .cart-items-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-cart i {
+            font-size: 64px;
+            color: #ccc;
+            margin-bottom: 20px;
+        }
+
+        .empty-cart p {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .btn-continue-shopping {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .btn-continue-shopping:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+            color: white;
+        }
+
+        /* ===== CART ITEM ===== */
+        .cart-item {
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            align-items: center;
+        }
+
+        .cart-item:hover {
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .item-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 8px;
+            overflow: hidden;
+            flex-shrink: 0;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .item-details {
+            flex: 1;
+        }
+
+        .item-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .item-price {
+            font-size: 16px;
+            color: #667eea;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: fit-content;
+        }
+
+        .quantity-control button {
+            background: #f0f0f0;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .quantity-control button:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .quantity-input {
+            width: 50px;
+            text-align: center;
+            border: 1px solid #e0e0e0;
+            padding: 6px;
+            border-radius: 4px;
+        }
+
+        .item-total {
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        .item-total-label {
+            color: #999;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .item-total-price {
+            font-size: 20px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .btn-remove {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+
+        .btn-remove:hover {
+            background: #ff5252;
+            transform: scale(1.05);
+        }
+
+        /* ===== SUMMARY SECTION ===== */
+        .summary-section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .summary-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .summary-row.total {
+            font-size: 22px;
+            font-weight: bold;
+            color: #667eea;
+            padding-top: 15px;
+            border-top: 2px solid #f0f0f0;
+            margin-top: 20px;
+        }
+
+        .checkout-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .btn-checkout {
+            flex: 1;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-checkout:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-clear-cart {
+            flex: 1;
+            background: #f0f0f0;
+            color: #333;
+            border: none;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-clear-cart:hover {
+            background: #e0e0e0;
+        }
+
+        .alert {
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .cart-item {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .item-image {
+                width: 100%;
+                max-width: 200px;
+            }
+
+            .item-total {
+                text-align: left;
+            }
+
+            .checkout-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ===== NAVBAR ===== -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">
+                <i class="bi bi-shop"></i>
+                My Shop
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">หน้าแรก</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/#products">สินค้า</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/cart">
+                            <i class="bi bi-cart-fill"></i> ตะกร้า
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin" style="color: #ffd700 !important;">
+                            <i class="bi bi-gear"></i> Admin
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <div class="cart-container">
+        <!-- Alert Container -->
+        <div id="alertContainer"></div>
+
+        <!-- Page Title -->
+        <div class="page-title">
+            <h1><i class="bi bi-cart-check"></i> ตะกร้าสินค้าของคุณ</h1>
+            <p id="cartStatus">กำลังโหลดข้อมูล...</p>
+        </div>
+
+        <div class="row">
+            <!-- Cart Items -->
+            <div class="col-lg-8">
+                <div class="cart-items-section">
+                    <div class="cart-items-title">สินค้าในตะกร้า</div>
+                    <div id="cartItemsContainer">
+                        <div class="text-center" style="padding: 40px;">
+                            <i class="bi bi-hourglass" style="font-size: 32px; color: #ccc;"></i>
+                            <p style="color: #999; margin-top: 15px;">กำลังโหลด...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary -->
+            <div class="col-lg-4">
+                <div class="summary-section">
+                    <div class="summary-title">สรุปการสั่งซื้อ</div>
+                    
+                    <div class="summary-row">
+                        <span>จำนวนสินค้า:</span>
+                        <strong id="summaryItemCount">0</strong>
+                    </div>
+
+                    <div class="summary-row">
+                        <span>ราคารวม:</span>
+                        <strong id="summarySubtotal">฿0.00</strong>
+                    </div>
+
+                    <div class="summary-row">
+                        <span>ค่าส่งพัสดุ:</span>
+                        <strong id="summaryShipping">ฟรี</strong>
+                    </div>
+
+                    <div class="summary-row total">
+                        <span>รวมทั้งสิ้น:</span>
+                        <strong id="summaryTotal">฿0.00</strong>
+                    </div>
+
+                    <div class="checkout-buttons">
+                        <button class="btn-checkout" onclick="checkout()">
+                            <i class="bi bi-credit-card"></i> ชำระเงิน
+                        </button>
+                        <button class="btn-clear-cart" onclick="clearCart()">
+                            <i class="bi bi-trash"></i> ล้างตะกร้า
+                        </button>
+                    </div>
+
+                    <a href="/" class="btn btn-outline-secondary w-100 mt-3">
+                        <i class="bi bi-arrow-left"></i> ดูสินค้าต่อ
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script>
+        // Show Alert
+        function showAlert(message, type = 'success') {
+            const alertContainer = document.getElementById('alertContainer');
+            const alertHTML = `
+                <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                    <i class="bi bi-check-circle"></i> ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            alertContainer.innerHTML = alertHTML;
+            setTimeout(() => {
+                const alert = document.querySelector('.alert');
+                if (alert) alert.remove();
+            }, 5000);
+        }
+
+        // Load Cart
+        function loadCart() {
+            fetch('/api/cart')
+                .then(response => response.json())
+                .then(data => {
+                    const { items, total_price, total_items } = data;
+                    const container = document.getElementById('cartItemsContainer');
+                    const cartStatus = document.getElementById('cartStatus');
+
+                    // Update summary
+                    document.getElementById('summaryItemCount').innerText = total_items;
+                    document.getElementById('summarySubtotal').innerText = `฿${total_price.toFixed(2)}`;
+                    document.getElementById('summaryTotal').innerText = `฿${total_price.toFixed(2)}`;
+
+                    // Update cart status
+                    if (items.length === 0) {
+                        cartStatus.innerText = 'ตะกร้าว่างเปล่า';
+                        container.innerHTML = `
+                            <div class="empty-cart">
+                                <i class="bi bi-cart-x"></i>
+                                <p>ยังไม่มีสินค้าในตะกร้า</p>
+                                <a href="/" class="btn-continue-shopping">
+                                    <i class="bi bi-shop"></i> ต่อไปยังการช้อปปิ้ง
+                                </a>
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    cartStatus.innerText = `${total_items} รายการ`;
+                    let html = '';
+
+                    items.forEach(item => {
+                        html += `
+                            <div class="cart-item">
+                                <div class="item-image">
+                                    ${item.image_url ? 
+                                        `<img src="${item.image_url}" alt="${item.name}">` : 
+                                        `<i class="bi bi-image" style="font-size: 40px; color: #ccc;"></i>`}
+                                </div>
+                                <div class="item-details">
+                                    <div class="item-name">${item.name}</div>
+                                    <div class="item-price">฿${item.price.toFixed(2)}</div>
+                                    <div class="quantity-control">
+                                        <button onclick="decreaseQuantity(${item.id})">−</button>
+                                        <input type="number" class="quantity-input" id="qty-${item.id}" value="${item.quantity}" readonly>
+                                        <button onclick="increaseQuantity(${item.id})">+</button>
+                                    </div>
+                                    <button class="btn-remove" onclick="removeFromCart(${item.id})">
+                                        <i class="bi bi-trash"></i> ลบ
+                                    </button>
+                                </div>
+                                <div class="item-total">
+                                    <div class="item-total-label">รวม:</div>
+                                    <div class="item-total-price">฿${item.item_total.toFixed(2)}</div>
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    container.innerHTML = html;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showAlert('เกิดข้อผิดพลาดในการโหลดตะกร้า', 'danger');
+                });
+        }
+
+        // Increase Quantity
+        function increaseQuantity(productId) {
+            const input = document.getElementById(`qty-${productId}`);
+            const newQuantity = parseInt(input.value) + 1;
+            updateQuantity(productId, newQuantity);
+        }
+
+        // Decrease Quantity
+        function decreaseQuantity(productId) {
+            const input = document.getElementById(`qty-${productId}`);
+            const newQuantity = Math.max(1, parseInt(input.value) - 1);
+            updateQuantity(productId, newQuantity);
+        }
+
+        // Update Quantity
+        function updateQuantity(productId, quantity) {
+            fetch(`/api/cart/update/${productId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ quantity })
+            })
+            .then(response => response.json())
+            .then(data => {
+                loadCart();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showAlert('เกิดข้อผิดพลาด', 'danger');
+            });
+        }
+
+        // Remove from Cart
+        function removeFromCart(productId) {
+            if (!confirm('คุณแน่ใจหรือว่าต้องการลบสินค้านี้?')) return;
+
+            fetch(`/api/cart/remove/${productId}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                showAlert('ลบสินค้าสำเร็จ', 'success');
+                loadCart();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showAlert('เกิดข้อผิดพลาด', 'danger');
+            });
+        }
+
+        // Clear Cart
+        function clearCart() {
+            if (!confirm('คุณแน่ใจหรือว่าต้องการล้างตะกร้าทั้งหมด?')) return;
+
+            fetch('/api/cart/clear', {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                showAlert('ล้างตะกร้าสำเร็จ', 'success');
+                loadCart();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showAlert('เกิดข้อผิดพลาด', 'danger');
+            });
+        }
+
+        // Checkout
+        function checkout() {
+            fetch('/api/cart')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.total_items === 0) {
+                        showAlert('ตะกร้าว่างเปล่า', 'warning');
+                        return;
+                    }
+                    alert(`ยินดีชำระเงินสำเร็จ รวม ฿${data.total_price.toFixed(2)}\n\nหมายเหตุ: นี่เพียงทดลองใช้เท่านั้น`);
+                    clearCart();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showAlert('เกิดข้อผิดพลาด', 'danger');
+                });
+        }
+
+        // Load cart on page load
+        loadCart();
+    </script>
+</body>
+</html>
