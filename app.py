@@ -5,6 +5,7 @@ from werkzeug.utils import secure_filename
 import os
 import sys
 from datetime import datetime
+import shutil
 
 # ตั้งค่า encoding สำหรับ Window Terminal
 if sys.stdout.encoding != 'utf-8':
@@ -17,13 +18,31 @@ app = Flask(__name__, template_folder='images/templates', static_folder='images/
 # ตั้งค่า Configuration
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///shop.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['UPLOAD_FOLDER'] = 'images/uploads'
+# store uploads inside the static folder so they can be served by Flask
+old_upload_folder = 'images/uploads'
+app.config['UPLOAD_FOLDER'] = os.path.join(app.static_folder, 'uploads')
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 app.secret_key = 'your_secret_key_change_this_in_production'  # สำหรับ Session
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 
-# สร้างโฟลเดอร์ uploads ถ้ายังไม่มี
+# สร้างโฟลเดอร์ uploads ถ้ายังไม่มี และย้ายไฟล์เก่าจากโฟลเดอร์เดิมถ้ามี
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+if os.path.exists(old_upload_folder):
+    try:
+        for fname in os.listdir(old_upload_folder):
+            src = os.path.join(old_upload_folder, fname)
+            dst = os.path.join(app.config['UPLOAD_FOLDER'], fname)
+            if os.path.isfile(src) and not os.path.exists(dst):
+                shutil.move(src, dst)
+        # if old folder empty after move, attempt remove
+        try:
+            if not os.listdir(old_upload_folder):
+                os.rmdir(old_upload_folder)
+        except Exception:
+            pass
+    except Exception:
+        # Non-fatal; continue if migration fails
+        pass
 
 # สร้าง Database object
 db = SQLAlchemy(app)
