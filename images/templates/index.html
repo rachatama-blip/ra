@@ -465,9 +465,14 @@
                                     <i class="bi bi-star-half"></i>
                                 </div>
                                 <div class="product-price">฿{{ "%.2f"|format(product.price) }}</div>
-                                <button class="btn btn-add-cart w-100" data-product-id="{{ product.id }}" data-product-name="{{ product.name }}" data-product-price="{{ product.price }}" onclick="addToCart(event)">
-                                    <i class="bi bi-cart-plus"></i> เพิ่มลงตะกร้า
-                                </button>
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-add-cart" data-product-id="{{ product.id }}" data-product-name="{{ product.name }}" data-product-price="{{ product.price }}" onclick="addToCart(event)">
+                                        <i class="bi bi-cart-plus"></i> เพิ่มลงตะกร้า
+                                    </button>
+                                    <button type="button" class="btn btn-buy-now btn-outline-primary" data-product-id="{{ product.id }}" data-product-name="{{ product.name }}" data-product-price="{{ product.price }}" onclick="addToCartAndCheckout(event)">
+                                        <i class="bi bi-lightning-charge"></i> ซื้อเลย
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -585,6 +590,38 @@
                     // Show success message
                     showNotification(`เพิ่ม ${productName} ลงตะกร้าแล้ว!`);
                     updateCartBadge();
+                } else {
+                    showNotification('เกิดข้อผิดพลาด', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('เกิดข้อผิดพลาด', 'error');
+            });
+        }
+
+        // Add to cart then go to checkout
+        function addToCartAndCheckout(event) {
+            event.preventDefault();
+            const btn = event.target.closest('button');
+            const productId = btn.getAttribute('data-product-id');
+            const productName = btn.getAttribute('data-product-name');
+
+            fetch('/api/cart/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    product_id: productId,
+                    quantity: 1
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    updateCartBadge();
+                    window.location.href = '/checkout';
                 } else {
                     showNotification('เกิดข้อผิดพลาด', 'error');
                 }

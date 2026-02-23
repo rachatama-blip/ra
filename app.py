@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from flask import Flask, render_template, request, jsonify, url_for, session
+from flask import Flask, render_template, request, jsonify, url_for, session, redirect
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.utils import secure_filename
 import os
@@ -60,6 +60,58 @@ class Product(db.Model):
             'image_url': self.image_url
         }
 
+
+# ===== ORDER MODELS =====
+class Order(db.Model):
+    __tablename__ = 'orders'
+    id = db.Column(db.Integer, primary_key=True)
+    order_id = db.Column(db.String(64), unique=True, nullable=False)
+    name = db.Column(db.String(200), nullable=False)
+    address = db.Column(db.Text, nullable=False)
+    phone = db.Column(db.String(50), nullable=True)
+    payment_method = db.Column(db.String(20), nullable=False)
+    subtotal = db.Column(db.Float, nullable=False)
+    shipping = db.Column(db.Float, nullable=False)
+    total = db.Column(db.Float, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.now)
+    items = db.relationship('OrderItem', backref='order', cascade='all, delete-orphan')
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'order_id': self.order_id,
+            'name': self.name,
+            'address': self.address,
+            'phone': self.phone,
+            'payment_method': self.payment_method,
+            'subtotal': self.subtotal,
+            'shipping': self.shipping,
+            'total': self.total,
+            'created_at': self.created_at.isoformat(),
+            'items': [i.to_dict() for i in self.items]
+        }
+
+
+class OrderItem(db.Model):
+    __tablename__ = 'order_items'
+    id = db.Column(db.Integer, primary_key=True)
+    order_id = db.Column(db.Integer, db.ForeignKey('orders.id'), nullable=False)
+    product_id = db.Column(db.Integer, nullable=True)
+    product_name = db.Column(db.String(200), nullable=False)
+    product_price = db.Column(db.Float, nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
+    item_total = db.Column(db.Float, nullable=False)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'product_id': self.product_id,
+            'product_name': self.product_name,
+            'product_price': self.product_price,
+            'quantity': self.quantity,
+            'item_total': self.item_total
+        }
+
 # ===== ROUTE =====
 @app.route('/')
 def index():
@@ -72,6 +124,18 @@ def admin():
     """หน้า Admin Panel"""
     products = Product.query.all()
     return render_template('admin.html', products=products)
+
+
+@app.route('/admin/orders')
+def admin_orders():
+    orders = Order.query.order_by(Order.created_at.desc()).all()
+    return render_template('admin_orders.html', orders=orders)
+
+
+@app.route('/admin/orders/<int:order_id>')
+def admin_order_detail(order_id):
+    order = Order.query.get_or_404(order_id)
+    return render_template('admin_order_detail.html', order=order)
 
 @app.route('/cart')
 def cart():
@@ -284,6 +348,102 @@ def clear_cart():
         return jsonify({'message': 'ล้างตะกร้าสำเร็จ'}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+
+# ===== CHECKOUT =====
+@app.route('/checkout', methods=['GET'])
+def checkout():
+    cart = session.get('cart', {})
+    cart_items = []
+    subtotal = 0
+
+    for product_id, quantity in cart.items():
+        product = Product.query.get(int(product_id))
+        if product:
+            item_total = product.price * quantity
+            subtotal += item_total
+            cart_items.append({
+                'id': product.id,
+                'name': product.name,
+                'price': product.price,
+                'quantity': quantity,
+                'item_total': item_total,
+                'image_url': product.image_url
+            })
+
+    # Simple shipping rule: free over 1000, otherwise flat 50
+    shipping = 0 if subtotal >= 1000 or subtotal == 0 else 50
+    total = subtotal + shipping
+
+    return render_template('checkout.html', items=cart_items, subtotal=subtotal, shipping=shipping, total=total)
+
+
+@app.route('/checkout/confirm', methods=['POST'])
+def checkout_confirm():
+    # รับข้อมูลการชำระเงินและที่อยู่จากฟอร์ม
+    name = request.form.get('name', '').strip()
+    address = request.form.get('address', '').strip()
+    phone = request.form.get('phone', '').strip()
+    payment_method = request.form.get('payment_method', 'cod')
+
+    if not name or not address:
+        return render_template('checkout.html', error='กรุณากรอกชื่อและที่อยู่ให้ครบ', items=[], subtotal=0, shipping=0, total=0)
+
+    # เตรียมข้อมูลรายการจาก session
+    cart = session.get('cart', {})
+    items = []
+    subtotal = 0
+    for product_id, quantity in cart.items():
+        product = Product.query.get(int(product_id))
+        if product:
+            item_total = product.price * quantity
+            subtotal += item_total
+            items.append({
+                'id': product.id,
+                'name': product.name,
+                'price': product.price,
+                'quantity': quantity,
+                'item_total': item_total
+            })
+
+    shipping = 0 if subtotal >= 1000 or subtotal == 0 else 50
+    total = subtotal + shipping
+
+    # ทำการ "ประมวลผล" การชำระเงิน: บันทึก Order ลงฐานข้อมูล
+    order_id = datetime.now().strftime('%Y%m%d%H%M%S')
+
+    new_order = Order(
+        order_id=order_id,
+        name=name,
+        address=address,
+        phone=phone,
+        payment_method=payment_method,
+        subtotal=subtotal,
+        shipping=shipping,
+        total=total
+    )
+
+    db.session.add(new_order)
+    db.session.flush()  # ให้ new_order.id พร้อมใช้งาน
+
+    for it in items:
+        oi = OrderItem(
+            order_id=new_order.id,
+            product_id=it.get('id'),
+            product_name=it.get('name'),
+            product_price=it.get('price'),
+            quantity=it.get('quantity'),
+            item_total=it.get('item_total')
+        )
+        db.session.add(oi)
+
+    db.session.commit()
+
+    # ล้างตะกร้าหลังการสั่งซื้อ
+    session.pop('cart', None)
+    session.modified = True
+
+    return render_template('checkout_success.html', order=new_order.to_dict())
 
 # ===== SEED DATABASE =====
 def seed_sample_products():

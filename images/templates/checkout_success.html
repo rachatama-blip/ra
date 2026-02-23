@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ออเดอร์สำเร็จ - My Shop</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container" style="max-width:800px;margin-top:40px;">
+        <div class="card p-4">
+            <h3>ขอบคุณสำหรับการสั่งซื้อ!</h3>
+            <p>รหัสคำสั่งซื้อ: <strong>{{ order['order_id'] }}</strong></p>
+            <p>ชื่อผู้รับ: {{ order['name'] }}</p>
+            <p>ที่อยู่: {{ order['address'] }}</p>
+            <p>ช่องทางชำระเงิน: {% if order['payment_method'] == 'card' %}บัตรเครดิต/เดบิต{% else %}ชำระเงินปลายทาง{% endif %}</p>
+
+            <hr>
+            <h5>สรุปรายการ</h5>
+            {% for it in order['items'] %}
+                <div class="d-flex justify-content-between">
+                    <div>{{ it['product_name'] if it.get('product_name') else it.get('name') }} x {{ it['quantity'] if it.get('quantity') else it.get('quantity') }}</div>
+                    <div>฿{{ '%.2f'|format(it['item_total'] if it.get('item_total') else it.get('item_total')) }}</div>
+                </div>
+            {% endfor %}
+
+            <hr>
+            <div class="d-flex justify-content-between">
+                <div>ราคารวม</div>
+                <div>฿{{ '%.2f'|format(order['subtotal']) }}</div>
+            </div>
+            <div class="d-flex justify-content-between">
+                <div>ค่าส่ง</div>
+                <div>{% if order['shipping'] == 0 %}ฟรี{% else %}฿{{ '%.2f'|format(order['shipping']) }}{% endif %}</div>
+            </div>
+            <div class="d-flex justify-content-between" style="font-weight:700;font-size:18px;">
+                <div>รวมทั้งสิ้น</div>
+                <div>฿{{ '%.2f'|format(order['total']) }}</div>
+            </div>
+
+            <a href="/" class="btn btn-primary mt-3">กลับหน้าแรก</a>
+        </div>
+    </div>
+</body>
+</html>
